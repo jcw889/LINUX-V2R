@@ -8,6 +8,7 @@ response = requests.get(url)
 
 if response.status_code == 200:
     data = response.json()
+    print(json.dumps(data, indent=4))  # 输出抓取到的数据，用于调试
     
     # 提取 VLESS 信息并转换为 v2rayN 可订阅的格式
     vless_links = []
@@ -26,6 +27,9 @@ if response.status_code == 200:
             link = f"vless://{id}@{address}:{port}?type={network}&security={security}&path={path}&flow={flow}#{name}"
             vless_links.append(link)
     
+    if not vless_links:
+        print("没有找到任何 VLESS 链接")  # 如果没有提取到链接，输出调试信息
+
     # 将所有链接连接成字符串，并编码为 Base64
     vless_content = "\n".join(vless_links)
     vless_content_base64 = base64.urlsafe_b64encode(vless_content.encode()).decode()
