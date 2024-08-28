@@ -1,4 +1,4 @@
-name: Scrape VLESS Info
+name: Scrape VLESS    
 
 on:
   schedule:
@@ -10,8 +10,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout repository content  
+    - name: Checkout repository content
       uses: actions/checkout@v3
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}  # 使用 GITHUB_TOKEN 进行身份验证
 
     - name: Set up Python
       uses: actions/setup-python@v4
@@ -32,6 +34,6 @@ jobs:
         git config --local user.name "GitHub Actions"
         git add v2rayN_subscription.txt
         git commit -m "Update v2rayN_subscription.txt"
-        git push
+        git push origin HEAD:main
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # 使用 GITHUB_TOKEN 进行身份验证
