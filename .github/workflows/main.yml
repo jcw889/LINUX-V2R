@@ -2,8 +2,8 @@ name: Scrape VLESS Info
 
 on:
   schedule:
-    - cron: "0 * * * *"  # 每小时运行一次
-  workflow_dispatch: # 手动触发
+    - cron: "30 08 * * *"  # 每天8:30运行一次
+  workflow_dispatch: # 手动触发                                                                                                                                                                                                                                                                                                                                                                                                                          
 
 jobs:
   build:
