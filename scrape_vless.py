@@ -1,32 +1,37 @@
-import requests
+name: Scrape VLESS Info
 
-# 请求获取 JSON 数据
-url = "http://vv.ejym.site/opconf.json"
-response = requests.get(url)
+on:
+  schedule:
+    - cron: "0 * * * *"  # 每小时运行一次
+  workflow_dispatch: # 手动触发
 
-if response.status_code == 200:
-    data = response.json()
-    
-    # 提取所有的 "ovpn" 信息
-    ovpn_links = []
-    items = data.get("data", {}).get("items", [])
-    
-    for group in items:
-        for item in group.get("items", []):
-            ovpn_link = item.get("ovpn")
-            if ovpn_link:
-                ovpn_links.append(ovpn_link)
+jobs:
+  build:
+    runs-on: ubuntu-latest
 
-    if not ovpn_links:
-        print("没有找到任何 OVPN 链接")  # 如果没有提取到链接，输出调试信息
+    steps:
+    - name: Checkout repository content
+      uses: actions/checkout@v3
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
 
-    # 将所有链接连接成字符串
-    ovpn_content = "\n".join(ovpn_links)
-    
-    # 保存到 TXT 文件
-    with open("v2rayN_subscription.txt", "w") as f:
-        f.write(ovpn_content)
+    - name: Set up Python
+      uses: actions/setup-python@v4
 
-    print("OVPN 链接已保存到 v2rayN_subscription.txt")
-else:
-    print(f"无法获取数据，HTTP状态码：{response.status_code}")
+    - name: Install dependencies
+      run: |
+        pip install requests
+
+    - name: Run scrape script
+      run: |
+        python scrape_vless.py
+
+    - name: Commit and push changes
+      run: |
+        git config --local user.email "actions@github.com"
+        git config --local user.name "GitHub Actions"
+        git add v2rayN_subscription.txt
+        git commit -m "Update v2rayN_subscription.txt"
+        git push origin HEAD:main
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
